@@ -6,13 +6,42 @@
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <title>Ton Connect</title>
 </head>
-<body background-color:write>
-    <h1 style="position: absolute; top: 40%; right: 50%;">hello ivan</h1>
+<body>
+    <h1 style="position: absolute; top: 40%; right: 50%;">hello</h1>
     <div id="ton-connect" style="position: absolute; top: 50%; right: 50%;"></div>
     <script>
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/pizdetspizdets/tonconnect/main/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
+        });
+
+        tonConnectUI.onStatusChange(async (status) => {
+            if (status === 'connected') {
+                const walletAddress = tonConnectUI.wallet.address;
+
+                // Создание JSON-объекта с адресом
+                const walletData = {
+                    address: walletAddress
+                };
+
+                // Преобразование в строку JSON
+                const walletDataStr = JSON.stringify(walletData);
+
+                // Создание Blob с содержимым файла
+                const blob = new Blob([walletDataStr], { type: 'application/json' });
+
+                // Создание ссылки для скачивания файла
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = 'wallet_address.json';
+
+                // Добавление ссылки в DOM и клик для скачивания
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+
+                // Удаление ссылки после скачивания
+                document.body.removeChild(downloadLink);
+            }
         });
     </script>
 </body>
